@@ -6,21 +6,23 @@
 **Nombre:** Stephany Mejía  
 **Microcontrolador:** NUCLEO-F446RE
 
-## Descripción
+## 1. Descripción
 
-En este laboratorio utilizamos el ADC de 12 bits para leer tres potenciómetros, DMA para guardar las lecturas automáticamente y UART para mostrar los valores en una terminal serial WCH.
+En este laboratorio se implementó el módulo ADC del STM32 para realizar lecturas analógicas de tres potenciómetros. Se utilizó una resolución de 12 bits y el módulo DMA para almacenar los datos automáticamente en memoria. Además, se configuró la comunicación UART para visualizar las lecturas mediante una terminal serial WCH.
 
-Para el Post Lab simulamos tres variables biológicas y utilizamos LEDs para indicar cuando alguna se encuentra fuera de su rango normal.
+Para el Post Lab se desarrolló un sistema de monitoreo de variables biológicas simuladas, en el cual se utilizaron tres LEDs como indicadores de alerta.
 
-## Materiales
-- NUCLEO-F446RE
+## 2. Materiales
+
+- STM32 NUCLEO-F446RE
 - 3 potenciómetros
-- 3 LEDs y resistencias de 220 Ω
-- Protoboard y jumpers
+- 3 LEDs (verde, rojo y amarillo)
+- 3 resistencias de 220 Ω
+- Protoboard y cables jumper
 
-## Conexiones
+## 3. Conexiones
 
-| Componente | Pin |
+| Componente | Pin STM32 |
 |---|---|
 | POT 1 | PA0 - ADC1_IN0 |
 | POT 2 | PA1 - ADC1_IN1 |
@@ -29,43 +31,40 @@ Para el Post Lab simulamos tres variables biológicas y utilizamos LEDs para ind
 | LED rojo | PA6 |
 | LED amarillo | PA7 |
 
-## Configuración
+## 4. Configuración
 
-- ADC1: 12 bits, 3 canales, 84 ciclos de muestreo.
-- DMA2 Stream 0: Peripheral to Memory, modo Circular.
-- USART2: 115200 baudios.
-- LEDs: GPIO_Output.
+Se realizaron las siguientes configuraciones en STM32CubeMX:
 
-## Desarrollo
+- ADC1 con resolución de 12 bits y tres canales.
+- Tiempo de muestreo de 84 ciclos.
+- DMA2 Stream 0 en modo circular.
+- USART2 con velocidad de 115200 baudios.
+- Tres salidas GPIO para controlar los LEDs.
 
-### Parte 1 - Lectura ADC
-Leímos el primer potenciómetro y mostramos su valor de 0 a 4095, además de calcular su voltaje.
+## 5. Desarrollo
 
-### Parte 2 - ADC con DMA
-Utilizamos DMA para almacenar continuamente las lecturas de los tres potenciómetros en un arreglo.
+### Parte 1. Lectura ADC
 
-```c
-volatile uint16_t adcValores[3] = {0};
-HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adcValores, 3);
-```
+Se realizó la lectura del primer potenciómetro mediante el ADC1. Los valores digitales obtenidos variaron dentro del rango de 0 a 4095, correspondiente a una resolución de 12 bits. También se implementó el cálculo del voltaje de entrada.
 
-### Parte 3 - Comunicación UART
-Enviamos las tres lecturas a WCH mediante USART2, utilizando `HAL_UART_Transmit()`.
+### Parte 2. ADC con DMA
 
-### Parte 4 - Rangos y alarmas
+Se configuró una secuencia de tres canales ADC y se utilizó DMA para almacenar continuamente las lecturas en un arreglo, sin necesidad de consultar individualmente cada conversión.
 
-Simulamos tres variables biológicas:
+### Parte 3. Comunicación UART
 
-| Variable | Rango normal simulado | LED |
+Se implementó la comunicación USART2 para transmitir las lecturas de los tres potenciómetros a una terminal serial WCH, donde se visualizaron los valores obtenidos.
+
+### Parte 4. Rangos y alarmas
+
+Se desarrolló una simulación de monitoreo de tres variables biológicas. Cada potenciómetro representó una variable y se establecieron rangos para identificar condiciones de alerta.
+
+| Variable simulada | Rango normal establecido | LED |
 |---|---|---|
-| Temperatura | 36–37.5 °C | Verde |
+| Temperatura corporal | 36–37.5 °C | Verde |
 | Frecuencia cardíaca | 60–100 bpm | Rojo |
-| Glucosa | 70–140 mg/dL | Amarillo |
+| Glucosa sanguínea | 70–140 mg/dL | Amarillo |
 
-Cuando una variable sale de su rango, se enciende su LED correspondiente. Cuando vuelve al rango normal, el LED se apaga.
+Se implementaron condiciones que permitieron activar el LED correspondiente cuando una variable se encontraba fuera del rango establecido. Al regresar al rango normal, el LED se apagaba automáticamente.
 
-Los valores biológicos son simulados mediante potenciómetros.
-
-## Conclusión
-
-Aprendimos a utilizar ADC para convertir señales analógicas a digitales, DMA para almacenar las lecturas sin consultar cada conversión y UART para enviar los resultados. También implementamos alarmas mediante LEDs, relacionando el laboratorio con una aplicación de ingeniería biomédica.
+Los rangos fueron utilizados únicamente con fines de simulación académica.
